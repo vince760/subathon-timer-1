@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import classNames from 'classnames'
-
+import Controls from '../../components/Controls'
+import Setup from '../../components/Setup'
 import {
   CAvatar,
   CButton,
@@ -18,6 +19,16 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CContainer,
+  CNav,
+  CNavItem,
+  CNavLink,
+  CFormInput,
+  CInputGroup,
+  CInputGroupText,
+  CForm,
+  CFormSelect,
+  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -41,6 +52,7 @@ import {
   cilPeople,
   cilUser,
   cilUserFemale,
+  cilGift,
 } from '@coreui/icons'
 
 import avatar1 from 'src/assets/images/avatars/1.jpg'
@@ -55,337 +67,281 @@ import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import MainChart from './MainChart'
 import Countdown from 'react-countdown'
 
+import WebFont from 'webfontloader'
+
+import './dashboard.css'
+let liveEvents = [
+  {
+    id: 1,
+    title: 'Nubs99 gifted 5 subs',
+    minutes: 25,
+    type: 'gift',
+  },
+  {
+    id: 2,
+    title: 'New T1 from SkiddyMold',
+    minutes: 5,
+    type: 'new',
+  },
+  {
+    id: 3,
+    title: 'Vinny_35 renewed T1',
+    minutes: 5,
+    type: 'renew',
+  },
+]
 const Dashboard = () => {
-  const [date, setDate] = React.useState('1710784987804')
-  // const progressExample = [
-  //   { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
-  //   { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
-  //   { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
-  //   { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
-  //   { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
-  // ]
+  const [seconds, setSeconds] = React.useState('00')
+  const [minutes, setMinutes] = React.useState('00')
+  const [hours, setHours] = React.useState(1)
 
-  // const progressGroupExample1 = [
-  //   { title: 'Monday', value1: 34, value2: 78 },
-  //   { title: 'Tuesday', value1: 56, value2: 94 },
-  //   { title: 'Wednesday', value1: 12, value2: 67 },
-  //   { title: 'Thursday', value1: 43, value2: 91 },
-  //   { title: 'Friday', value1: 22, value2: 73 },
-  //   { title: 'Saturday', value1: 53, value2: 82 },
-  //   { title: 'Sunday', value1: 9, value2: 69 },
-  // ]
+  const [activeTab, setTab] = React.useState('setup')
+  const [fontColor, setFontColor] = React.useState('#563d7c')
+  const [fontSize, setFontSize] = React.useState(40)
+  const [fontFamily, setFontFamily] = React.useState('Droid Sans')
+  const [isActive, setIsActive] = React.useState(false)
+  const [totalSeconds, setTotalSeconds] = React.useState(hours * 3600 + minutes * 60 + seconds)
 
-  // const progressGroupExample2 = [
-  //   { title: 'Male', icon: cilUser, value: 53 },
-  //   { title: 'Female', icon: cilUserFemale, value: 43 },
-  // ]
+  useEffect(() => {
+    let interval
+    WebFont.load({
+      google: {
+        families: [
+          'Droid Sans',
+          'Chilanka',
+          'Truculenta',
+          'Madimi One',
+          'Londrina Shadow',
+          'Bungee Spice',
+          'Aref Ruqaa Ink',
+        ],
+      },
+    })
+    if (isActive && totalSeconds > 0) {
+      interval = setInterval(() => {
+        setTotalSeconds((prevTotalSeconds) => {
+          const newTotalSeconds = prevTotalSeconds - 1
+          const newHours = Math.floor(newTotalSeconds / 360000)
+          const newMinutes = Math.floor((newTotalSeconds % 3600) / 60)
+          const newSeconds = newTotalSeconds % 60
+          setHours(newHours)
+          setMinutes(newMinutes)
+          setSeconds(newSeconds)
+          return newTotalSeconds
+        })
+      }, 1000)
+    } else if (totalSeconds === 0) {
+      clearInterval(interval)
+    }
+    return () => clearInterval(interval)
+  }, [isActive, totalSeconds])
 
-  // const progressGroupExample3 = [
-  //   { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
-  //   { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
-  //   { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
-  //   { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
-  // ]
+  function toggleTabs(target) {
+    setTab(target)
+  }
 
-  // const tableExample = [
-  //   {
-  //     avatar: { src: avatar1, status: 'success' },
-  //     user: {
-  //       name: 'Yiorgos Avraamu',
-  //       new: true,
-  //       registered: 'Jan 1, 2023',
-  //     },
-  //     country: { name: 'USA', flag: cifUs },
-  //     usage: {
-  //       value: 50,
-  //       period: 'Jun 11, 2023 - Jul 10, 2023',
-  //       color: 'success',
-  //     },
-  //     payment: { name: 'Mastercard', icon: cibCcMastercard },
-  //     activity: '10 sec ago',
-  //   },
-  //   {
-  //     avatar: { src: avatar2, status: 'danger' },
-  //     user: {
-  //       name: 'Avram Tarasios',
-  //       new: false,
-  //       registered: 'Jan 1, 2023',
-  //     },
-  //     country: { name: 'Brazil', flag: cifBr },
-  //     usage: {
-  //       value: 22,
-  //       period: 'Jun 11, 2023 - Jul 10, 2023',
-  //       color: 'info',
-  //     },
-  //     payment: { name: 'Visa', icon: cibCcVisa },
-  //     activity: '5 minutes ago',
-  //   },
-  //   {
-  //     avatar: { src: avatar3, status: 'warning' },
-  //     user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2023' },
-  //     country: { name: 'India', flag: cifIn },
-  //     usage: {
-  //       value: 74,
-  //       period: 'Jun 11, 2023 - Jul 10, 2023',
-  //       color: 'warning',
-  //     },
-  //     payment: { name: 'Stripe', icon: cibCcStripe },
-  //     activity: '1 hour ago',
-  //   },
-  //   {
-  //     avatar: { src: avatar4, status: 'secondary' },
-  //     user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2023' },
-  //     country: { name: 'France', flag: cifFr },
-  //     usage: {
-  //       value: 98,
-  //       period: 'Jun 11, 2023 - Jul 10, 2023',
-  //       color: 'danger',
-  //     },
-  //     payment: { name: 'PayPal', icon: cibCcPaypal },
-  //     activity: 'Last month',
-  //   },
-  //   {
-  //     avatar: { src: avatar5, status: 'success' },
-  //     user: {
-  //       name: 'Agapetus Tadeáš',
-  //       new: true,
-  //       registered: 'Jan 1, 2023',
-  //     },
-  //     country: { name: 'Spain', flag: cifEs },
-  //     usage: {
-  //       value: 22,
-  //       period: 'Jun 11, 2023 - Jul 10, 2023',
-  //       color: 'primary',
-  //     },
-  //     payment: { name: 'Google Wallet', icon: cibCcApplePay },
-  //     activity: 'Last week',
-  //   },
-  //   {
-  //     avatar: { src: avatar6, status: 'danger' },
-  //     user: {
-  //       name: 'Friderik Dávid',
-  //       new: true,
-  //       registered: 'Jan 1, 2023',
-  //     },
-  //     country: { name: 'Poland', flag: cifPl },
-  //     usage: {
-  //       value: 43,
-  //       period: 'Jun 11, 2023 - Jul 10, 2023',
-  //       color: 'success',
-  //     },
-  //     payment: { name: 'Amex', icon: cibCcAmex },
-  //     activity: 'Last week',
-  //   },
-  // ]
+  function stopCountdown(interval) {
+    clearInterval(interval)
+    console.log('Countdown stopped!')
+  }
+
+  function startCountdown(hours, minutes, seconds) {
+    var totalSeconds = hours * 3600 + minutes * 60 + seconds
+    var remainingSeconds = totalSeconds
+    var interval
+
+    function updateDisplay() {
+      var hrs = Math.floor(remainingSeconds / 3600)
+      var mins = Math.floor((remainingSeconds % 3600) / 60)
+      var secs = remainingSeconds % 60
+      console.log(hrs + 'h ' + mins + 'm ' + secs + 's')
+    }
+
+    interval = setInterval(function () {
+      if (remainingSeconds <= 0) {
+        clearInterval(interval)
+        console.log('Countdown complete!')
+      } else {
+        remainingSeconds--
+        updateDisplay()
+      }
+    }, 1000)
+
+    return interval
+  }
+
+  function start() {
+    setIsActive(true)
+  }
+
+  function pause() {
+    setIsActive(false)
+  }
+
+  function addMinute(min) {
+    const totalMinutes = hours * 60 + minutes + min
+    console.log(totalMinutes, hours, minutes, min)
+    const newHours = Math.floor(totalMinutes / 600000)
+    const newMinutes = totalMinutes % 60
+    console.log('newMinutes', newMinutes)
+    setHours(newHours)
+    setMinutes(newMinutes)
+  }
+
+  function mapLiveEvents(events) {
+    console.log(events)
+    return (
+      <CRow key={events.id} className="pt-4">
+        <CCol>
+          <CButton disabled color="primary p-2" className="position-relative">
+            {events.title}
+            <CBadge
+              className="border border-light p-2"
+              color="danger"
+              position="top-end"
+              shape="rounded-circle"
+            >
+              <span className="visually-hidden">New alerts</span>
+              <CIcon icon={cilGift} />
+            </CBadge>
+          </CButton>
+        </CCol>
+        <CCol>
+          <p className="pt-2">{`+${events.minutes} min`}</p>
+        </CCol>
+      </CRow>
+    )
+  }
 
   return (
     <>
-      {/* <WidgetsDropdown className="mb-4" /> */}
-      <CCard className="mb-4">
-        <CCardHeader align="center">
-          <h1>IGXCarnage Personal Subathon Timer Coming Soon!</h1>
-        </CCardHeader>
-        <CCardBody align="center">
-          {/* <CRow>
-            <CCol sm={5}>
-              <h4 id="traffic" className="card-title mb-0">
-                Traffic
-              </h4>
-              <div className="small text-body-secondary">January - July 2023</div>
-            </CCol>
-            <CCol sm={7} className="d-none d-md-block">
-              <CButton color="primary" className="float-end">
-                <CIcon icon={cilCloudDownload} />
-              </CButton>
-              <CButtonGroup className="float-end me-3">
-                {['Day', 'Month', 'Year'].map((value) => (
-                  <CButton
-                    color="outline-secondary"
-                    key={value}
-                    className="mx-0"
-                    active={value === 'Month'}
-                  >
-                    {value}
-                  </CButton>
-                ))}
-              </CButtonGroup>
-            </CCol>
-          </CRow> */}
-          {/* <MainChart /> */}
-          <Countdown date={1710784987804 + 494000 * 7000} />
-        </CCardBody>
-        {/* <CCardFooter>
-          <CRow
-            xs={{ cols: 1, gutter: 4 }}
-            sm={{ cols: 2 }}
-            lg={{ cols: 4 }}
-            xl={{ cols: 5 }}
-            className="mb-2 text-center"
-          >
-            {progressExample.map((item, index, items) => (
-              <CCol
-                className={classNames({
-                  'd-none d-xl-block': index + 1 === items.length,
-                })}
-                key={index}
-              >
-                <div className="text-body-secondary">{item.title}</div>
-                <div className="fw-semibold text-truncate">
-                  {item.value} ({item.percent}%)
-                </div>
-                <CProgress thin className="mt-2" color={item.color} value={item.percent} />
-              </CCol>
-            ))}
-          </CRow>
-        </CCardFooter> */}
-      </CCard>
-      {/* <WidgetsBrand className="mb-4" withCharts />
-      <CRow>
-        <CCol xs>
-          <CCard className="mb-4">
-            <CCardHeader>Traffic {' & '} Sales</CCardHeader>
-            <CCardBody>
-              <CRow>
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol xs={6}>
-                      <div className="border-start border-start-4 border-start-info py-1 px-3">
-                        <div className="text-body-secondary text-truncate small">New Clients</div>
-                        <div className="fs-5 fw-semibold">9,123</div>
-                      </div>
-                    </CCol>
-                    <CCol xs={6}>
-                      <div className="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-                        <div className="text-body-secondary text-truncate small">
-                          Recurring Clients
-                        </div>
-                        <div className="fs-5 fw-semibold">22,643</div>
-                      </div>
-                    </CCol>
-                  </CRow>
-                  <hr className="mt-0" />
-                  {progressGroupExample1.map((item, index) => (
-                    <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-prepend">
-                        <span className="text-body-secondary small">{item.title}</span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="info" value={item.value1} />
-                        <CProgress thin color="danger" value={item.value2} />
-                      </div>
-                    </div>
-                  ))}
-                </CCol>
-                <CCol xs={12} md={6} xl={6}>
-                  <CRow>
-                    <CCol xs={6}>
-                      <div className="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-                        <div className="text-body-secondary text-truncate small">Pageviews</div>
-                        <div className="fs-5 fw-semibold">78,623</div>
-                      </div>
-                    </CCol>
-                    <CCol xs={6}>
-                      <div className="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-                        <div className="text-body-secondary text-truncate small">Organic</div>
-                        <div className="fs-5 fw-semibold">49,123</div>
-                      </div>
-                    </CCol>
-                  </CRow>
+      <div className="px-2">
+        <CRow className="justify-content-center">
+          <CCol xs={3} className="text-center ">
+            <CCard style={{ minHeight: '80vh' }}>
+              <CCardHeader>Controls</CCardHeader>
+              <CCardBody>
+                <CNav variant="tabs">
+                  <CNavItem>
+                    <CNavLink
+                      id="control"
+                      style={{ cursor: 'pointer' }}
+                      onClick={(e) => {
+                        toggleTabs(e.target.id)
+                      }}
+                      active={activeTab === 'control'}
+                    >
+                      Control
+                    </CNavLink>
+                  </CNavItem>
+                  <CNavItem>
+                    <CNavLink
+                      id="setup"
+                      style={{ cursor: 'pointer' }}
+                      onClick={(e) => {
+                        toggleTabs(e.target.id)
+                      }}
+                      active={activeTab === 'setup'}
+                    >
+                      Setup
+                    </CNavLink>
+                  </CNavItem>
+                </CNav>
+                {activeTab === 'control' ? (
+                  <Controls
+                    pauseCountdown={pause}
+                    isTimerActive={isActive}
+                    startCountdown={start}
+                    time={{ hours, minutes, seconds }}
+                    addMinute={(e) => {
+                      addMinute(e)
+                    }}
+                  />
+                ) : (
+                  <Setup />
+                )}
+              </CCardBody>
+            </CCard>
+          </CCol>
+          <CCol>
+            <CCard
+              className="checkered justify-content-center align-items-center"
+              style={{ minHeight: '80vh' }}
+            >
+              <p style={{ color: fontColor, fontSize: `${fontSize}px`, fontFamily: fontFamily }}>
+                {`${hours}:${minutes}:${seconds}`}
+              </p>
+            </CCard>
+          </CCol>
+          <CCol xs={3} className="text-center">
+            <CCard style={{ minHeight: '80vh' }}>
+              <CCard style={{ minHeight: '80vh' }}>
+                <CCardHeader>Timer Options</CCardHeader>
+                <CCardBody>
+                  <CForm className="row g-2">
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText id="inputGroup-sizing-default">Font Color</CInputGroupText>
 
-                  <hr className="mt-0" />
+                      <CFormInput
+                        type="color"
+                        id="exampleColorInput"
+                        defaultValue="#563d7c"
+                        title="Choose your color"
+                        onChange={(e) => {
+                          setFontColor(e.target.value)
+                        }}
+                      />
+                    </CInputGroup>
+                  </CForm>
+                  <CForm className="row g-2">
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText id="inputGroup-sizing-default">Font Size</CInputGroupText>
 
-                  {progressGroupExample2.map((item, index) => (
-                    <div className="progress-group mb-4" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">{item.value}%</span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="warning" value={item.value} />
-                      </div>
-                    </div>
-                  ))}
+                      <CFormInput
+                        type="number"
+                        placeholder="16"
+                        aria-label="default input example"
+                        onChange={(e) => {
+                          setFontSize(e.target.value)
+                          console.log(fontSize)
+                        }}
+                      />
+                    </CInputGroup>
+                  </CForm>
+                  <CForm className="row g-2">
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText id="inputGroup-sizing-default">Font Family</CInputGroupText>
 
-                  <div className="mb-5"></div>
+                      <CFormSelect
+                        aria-label="Default select example"
+                        onChange={(e) => {
+                          console.log(e.target.value)
+                          setFontFamily(e.target.value)
+                        }}
+                        options={[
+                          { label: 'Droid Sans', value: 'Droid Sans' },
+                          { label: 'Chilanka', value: 'Chilanka' },
+                          { label: 'Truculenta', value: 'Truculenta' },
+                          { label: 'Madimi One', value: 'Madimi One' },
+                          { label: 'Londrina Shadow', value: 'Londrina Shadow' },
+                          { label: 'Bungee Spice', value: 'Bungee Spice' },
+                          { label: 'Aref Ruqaa Ink', value: 'Aref Ruqaa Ink' },
+                        ]}
+                      />
+                    </CInputGroup>
+                  </CForm>
+                  <hr />
+                  <CCardHeader>Live Events</CCardHeader>
 
-                  {progressGroupExample3.map((item, index) => (
-                    <div className="progress-group" key={index}>
-                      <div className="progress-group-header">
-                        <CIcon className="me-2" icon={item.icon} size="lg" />
-                        <span>{item.title}</span>
-                        <span className="ms-auto fw-semibold">
-                          {item.value}{' '}
-                          <span className="text-body-secondary small">({item.percent}%)</span>
-                        </span>
-                      </div>
-                      <div className="progress-group-bars">
-                        <CProgress thin color="success" value={item.percent} />
-                      </div>
-                    </div>
-                  ))}
-                </CCol>
-              </CRow>
-
-              <br />
-
-              <CTable align="middle" className="mb-0 border" hover responsive>
-                <CTableHead className="text-nowrap">
-                  <CTableRow>
-                    <CTableHeaderCell className="bg-body-tertiary text-center">
-                      <CIcon icon={cilPeople} />
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">User</CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary text-center">
-                      Country
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Usage</CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary text-center">
-                      Payment Method
-                    </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Activity</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {tableExample.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
-                      <CTableDataCell className="text-center">
-                        <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div>{item.user.name}</div>
-                        <div className="small text-body-secondary text-nowrap">
-                          <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-                          {item.user.registered}
-                        </div>
-                      </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="d-flex justify-content-between text-nowrap">
-                          <div className="fw-semibold">{item.usage.value}%</div>
-                          <div className="ms-3">
-                            <small className="text-body-secondary">{item.usage.period}</small>
-                          </div>
-                        </div>
-                        <CProgress thin color={item.usage.color} value={item.usage.value} />
-                      </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.payment.icon} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="small text-body-secondary text-nowrap">Last login</div>
-                        <div className="fw-semibold text-nowrap">{item.activity}</div>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow> */}
+                  {liveEvents.map((events) => {
+                   return mapLiveEvents(events)
+                  })}
+                </CCardBody>
+              </CCard>
+            </CCard>
+          </CCol>
+        </CRow>
+      </div>
     </>
   )
 }
